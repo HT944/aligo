@@ -34,6 +34,7 @@ class BaseAligo:
             login_timeout: float = None,
             re_login: bool = True,
             request_interval: int = 0,
+            ssl_verify: bool|str = True
     ):
         """
         BaseAligo
@@ -50,6 +51,7 @@ class BaseAligo:
         :param login_timeout: 登录超时时间，单位：秒
         :param re_login: refresh_token 失效后是否继续登录（弹出二维码或邮件，需等待） fix #73
         :param request_interval: 每次请求等待的时间，避免请求频繁触发风控
+        :param ssl_verify: (可选) 可配合 proxies 使用, 方便流量录制/抓取, 默认使用系统CA (具体参考 https://requests.readthedocs.io/en/latest/user/advanced/#ssl-cert-verification)
         """
         self._auth = Auth(
             name=name,
@@ -64,6 +66,7 @@ class BaseAligo:
             login_timeout=login_timeout,
             re_login=re_login,
             request_interval=request_interval,
+            ssl_verify=ssl_verify,
         )
         # 因为 self._auth.session 没有被重新赋值, 所以可以这么用
         self._session: requests.Session = self._auth.session

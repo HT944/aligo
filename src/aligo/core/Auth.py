@@ -55,7 +55,6 @@ def logout(name):
 class Auth:
     """..."""
 
-    _VERIFY_SSL = True
     _SLEEP_TIME_SEC = None
 
     # x-headers
@@ -89,6 +88,7 @@ class Auth:
             request_failed_delay: float = 3,
             requests_timeout: float = 30.0,
             request_interval: int = 0,
+            ssl_verify: bool|str = True
     ):
         """扫描二维码登录"""
 
@@ -104,6 +104,7 @@ class Auth:
             request_failed_delay: float = 3,
             requests_timeout: float = 30.0,
             request_interval: int = 0,
+            ssl_verify: bool|str = True
     ):
         """refresh_token 登录"""
 
@@ -121,6 +122,7 @@ class Auth:
             login_timeout: float = None,
             re_login: bool = True,
             request_interval: int = 0,
+            ssl_verify: bool|str = True
     ):
         """..."""
 
@@ -138,6 +140,7 @@ class Auth:
             login_timeout: float = None,
             re_login: bool = True,
             request_interval: int = 0,
+            ssl_verify: bool|str = True
     ):
         """登录验证
 
@@ -153,6 +156,7 @@ class Auth:
         :param login_timeout: 登录超时时间，单位：秒
         :param re_login: refresh_token 失效后是否继续登录（弹出二维码或邮件，需等待） fix #73
         :param request_interval: 每次请求等待的时间，避免请求频繁触发风控
+        :param ssl_verify: (可选) 可配合 proxies 使用, 方便流量录制/抓取, 默认使用系统CA (具体参考 https://requests.readthedocs.io/en/latest/user/advanced/#ssl-cert-verification)
         """
         self._name_name = name
         self._name = aligo_config_folder.joinpath(f'{name}.json')
@@ -184,6 +188,7 @@ class Auth:
         self.session = requests.session()
         self.session.trust_env = False
         self.session.proxies = proxies
+        self.session.verify = ssl_verify
         self.session.headers.update(UNI_HEADERS)
 
         self.token: Optional[Token] = None
@@ -397,7 +402,7 @@ class Auth:
             try:
                 response = self.session.request(
                     method=method, url=url, params=params, data=data,
-                    headers=headers, verify=self._VERIFY_SSL, json=body, timeout=self._requests_timeout
+                    headers=headers, json=body, timeout=self._requests_timeout
                 )
             except requests.exceptions.ConnectionError as e:
                 self.log.warning(e)
