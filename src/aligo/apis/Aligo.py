@@ -64,6 +64,7 @@ class Aligo(
             login_timeout: float = None,
             re_login: bool = True,
             request_interval: int = 0,
+            ssl_verify: bool|str = True
     ):
         """
         Aligo
@@ -80,8 +81,9 @@ class Aligo(
         :param login_timeout: (可选) 登录超时时间，单位：秒。
         :param re_login: refresh_token 失效后是否继续登录（弹出二维码或邮件，需等待） fix #73
         :param request_interval: 每次请求等待的时间，避免请求频繁触发风控
+        :param ssl_verify: (可选) 可配合 proxies 使用, 方便流量录制/抓取, 默认使用系统CA (具体参考 https://requests.readthedocs.io/en/latest/user/advanced/#ssl-cert-verification)
 
-        level, use_aria2, proxies, port, email 可以通过 配置文件 配置默认值，在 <用户家目录>/.aligo/config.json5 中
+        level, use_aria2, proxies, port, email, ssl_verify 可以通过 配置文件 配置默认值，在 <用户家目录>/.aligo/config.json5 中
         ```json5
         {
           "level": 10,
@@ -104,6 +106,8 @@ class Aligo(
                 use_aria2 = config.get('use_aria2', use_aria2)
             if proxies is None:
                 proxies = config.get('proxies', proxies)
+            if 'ssl_verify' in config:
+                ssl_verify = config.get('ssl_verify', ssl_verify)
             if port is None:
                 port = config.get('port', port)
             if email is None:
@@ -133,4 +137,5 @@ class Aligo(
             login_timeout,
             re_login,
             request_interval,
+            ssl_verify,
         )
